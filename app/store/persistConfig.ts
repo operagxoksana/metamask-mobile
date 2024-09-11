@@ -73,7 +73,7 @@ const persistTransform = createTransform(
       SwapsController,
       PhishingController,
       ...controllers
-    } = inboundState.backgroundState || {};
+    } = inboundState.backgroundState ?? {};
     const { tokenList, tokensChainsCache, ...persistedTokenListController } =
       TokenListController;
     const {
@@ -85,7 +85,7 @@ const persistTransform = createTransform(
       topAssets,
       topAssetsLastFetched,
       ...persistedSwapsController
-    } = SwapsController;
+    } = SwapsController ?? {};
 
     const { phishingLists, whitelist, ...persistedPhishingController } =
       PhishingController;

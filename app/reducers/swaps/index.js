@@ -124,7 +124,7 @@ export const selectSwapsQuotes = createSelector(
 );
 export const selectSwapsAggregatorMetadata = createSelector(
   selectSwapsControllerState,
-  (swapsControllerState) => swapsControllerState.aggregatorMetadata,
+  (swapsControllerState) => swapsControllerState?.aggregatorMetadata ?? {},
 );
 export const selectSwapsError = createSelector(
   selectSwapsControllerState,
