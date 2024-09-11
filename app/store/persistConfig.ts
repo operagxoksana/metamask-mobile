@@ -88,7 +88,7 @@ const persistTransform = createTransform(
     } = SwapsController ?? {};
 
     const { phishingLists, whitelist, ...persistedPhishingController } =
-      PhishingController;
+      PhishingController ?? {};
 
     // Reconstruct data to persist
     const newState = {
