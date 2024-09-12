@@ -75,7 +75,7 @@ const persistTransform = createTransform(
       ...controllers
     } = inboundState.backgroundState ?? {};
     const { tokenList, tokensChainsCache, ...persistedTokenListController } =
-      TokenListController;
+      TokenListController ?? {};
     const {
       aggregatorMetadata,
       aggregatorMetadataLastFetched,
