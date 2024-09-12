@@ -534,7 +534,7 @@ export function getTransactionToName({
     return ensRecipient;
   }
 
-  const networkAddressBook = addressBook[chainId];
+  const networkAddressBook = addressBook?.[chainId] ?? {};
   const checksummedToAddress = toChecksumAddress(toAddress);
 
   // Convert internalAccounts array to a map for quick lookup
