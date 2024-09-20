@@ -406,7 +406,7 @@ export const getNetworkNameFromProviderConfig = (providerConfig) => {
   if (providerConfig?.nickname) {
     name = providerConfig?.nickname;
   } else {
-    const networkType = providerConfig.type;
+    const networkType = providerConfig?.type;
     name = NetworkList?.[networkType]?.name || NetworkList[RPC].name;
   }
   return name;
