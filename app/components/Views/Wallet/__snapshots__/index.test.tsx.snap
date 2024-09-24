@@ -208,7 +208,7 @@ exports[`Wallet should render correctly 1`] = `
                       {
                         "color": "#141618",
                         "flexShrink": 1,
-                        "fontFamily": "Euclid Circular B",
+                        "fontFamily": "EuclidCircularB-Regular",
                         "fontSize": 14,
                         "fontWeight": "400",
                         "letterSpacing": 0,
@@ -260,6 +260,16 @@ exports[`Wallet should render correctly 1`] = `
                   }
                 }
               >
+                <View
+                  style={
+                    {
+                      "alignItems": "center",
+                      "flex": 1,
+                      "justifyContent": "center",
+                      "position": "relative",
+                    }
+                  }
+                />
                 <TouchableOpacity
                   accessible={true}
                   activeOpacity={1}
@@ -540,7 +550,7 @@ exports[`Wallet should render correctly 1`] = `
                                 style={
                                   {
                                     "color": "#141618",
-                                    "fontFamily": "Euclid Circular B",
+                                    "fontFamily": "EuclidCircularB-Medium",
                                     "fontSize": 16,
                                     "fontWeight": "500",
                                     "letterSpacing": 0,
@@ -556,7 +566,7 @@ exports[`Wallet should render correctly 1`] = `
                                 style={
                                   {
                                     "color": "#0376c9",
-                                    "fontFamily": "Euclid Circular B",
+                                    "fontFamily": "EuclidCircularB-Regular",
                                     "fontSize": 14,
                                     "fontWeight": "400",
                                     "letterSpacing": 0,
@@ -759,7 +769,7 @@ exports[`Wallet should render correctly 1`] = `
                                   style={
                                     {
                                       "color": "#141618",
-                                      "fontFamily": "Euclid Circular B",
+                                      "fontFamily": "EuclidCircularB-Regular",
                                       "fontSize": 16,
                                       "fontWeight": "400",
                                       "letterSpacing": 0,
@@ -821,7 +831,7 @@ exports[`Wallet should render correctly 1`] = `
                                 style={
                                   {
                                     "color": "#141618",
-                                    "fontFamily": "Euclid Circular B",
+                                    "fontFamily": "EuclidCircularB-Bold",
                                     "fontSize": 12,
                                     "fontWeight": "700",
                                     "letterSpacing": 0,
@@ -861,7 +871,7 @@ exports[`Wallet should render correctly 1`] = `
                                     style={
                                       {
                                         "color": "#0376c9",
-                                        "fontFamily": "Euclid Circular B",
+                                        "fontFamily": "EuclidCircularB-Regular",
                                         "fontSize": 12,
                                         "fontWeight": "400",
                                         "letterSpacing": 0,

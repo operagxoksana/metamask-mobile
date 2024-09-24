@@ -119,6 +119,21 @@ const styles = StyleSheet.create({
     height: 24,
     marginLeft: 16,
   },
+  notificationsWrapper: {
+    position: 'relative',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  notificationsBadge: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+
+    position: 'absolute',
+    top: 2,
+    right: 10,
+  },
 });
 
 const metamask_name = require('../../../images/metamask-name.png'); // eslint-disable-line
@@ -901,6 +916,9 @@ export function getWalletNavbarOptions(
   navigation,
   themeColors,
   isNotificationEnabled,
+  isProfileSyncingEnabled,
+  unreadNotificationCount,
+  readNotificationCount,
 ) {
   const innerStyles = StyleSheet.create({
     headerStyle: {
@@ -963,7 +981,7 @@ export function getWalletNavbarOptions(
   };
 
   function openQRScanner() {
-    navigation.navigate('QRScanner', {
+    navigation.navigate(Routes.QR_TAB_SWITCHER, {
       onScanSuccess,
     });
     trackEvent(MetaMetricsEvents.WALLET_QR_SCANNER);
@@ -972,8 +990,16 @@ export function getWalletNavbarOptions(
   function handleNotificationOnPress() {
     if (isNotificationEnabled && isNotificationsFeatureEnabled()) {
       navigation.navigate(Routes.NOTIFICATIONS.VIEW);
+      trackEvent(MetaMetricsEvents.NOTIFICATIONS_MENU_OPENED, {
+        unread_count: unreadNotificationCount,
+        read_count: readNotificationCount,
+      });
     } else {
       navigation.navigate(Routes.NOTIFICATIONS.OPT_IN_STACK);
+      trackEvent(MetaMetricsEvents.NOTIFICATIONS_ACTIVATED, {
+        action_type: 'started',
+        is_profile_syncing_enabled: isProfileSyncingEnabled,
+      });
     }
   }
 
@@ -998,16 +1024,31 @@ export function getWalletNavbarOptions(
     ),
     headerRight: () => (
       <View style={styles.leftButtonContainer}>
-        {isNotificationsFeatureEnabled() && (
-          <ButtonIcon
-            iconColor={IconColor.Primary}
-            onPress={handleNotificationOnPress}
-            iconName={IconName.Notification}
-            size={IconSize.Xl}
-            testID={WalletViewSelectorsIDs.WALLET_NOTIFICATIONS_BUTTON}
-            style={styles.notificationButton}
-          />
-        )}
+
+        <View style={styles.notificationsWrapper}>
+          {isNotificationsFeatureEnabled() && (
+            <ButtonIcon
+              iconColor={IconColor.Primary}
+              onPress={handleNotificationOnPress}
+              iconName={IconName.Notification}
+              size={IconSize.Xl}
+              testID={WalletViewSelectorsIDs.WALLET_NOTIFICATIONS_BUTTON}
+              style={styles.notificationButton}
+            />
+          )}
+          {isNotificationEnabled && (
+            <View
+              style={[
+                styles.notificationsBadge,
+                {
+                  backgroundColor: unreadNotificationCount
+                    ? themeColors.error.default
+                    : themeColors.background.transparent,
+                },
+              ]}
+            />)}
+        </View>
+
 
         <ButtonIcon
           iconColor={IconColor.Primary}
@@ -1088,12 +1129,12 @@ export function getImportTokenNavbarOptions(
             onClose
               ? () => onClose()
               : () =>
-                  navigation.navigate(Routes.WALLET.HOME, {
-                    screen: Routes.WALLET.TAB_STACK_FLOW,
-                    params: {
-                      screen: Routes.WALLET_VIEW,
-                    },
-                  })
+                navigation.navigate(Routes.WALLET.HOME, {
+                  screen: Routes.WALLET.TAB_STACK_FLOW,
+                  params: {
+                    screen: Routes.WALLET_VIEW,
+                  },
+                })
           }
         />
       </TouchableOpacity>
@@ -1148,14 +1189,14 @@ export function getNftDetailsNavbarOptions(
     ),
     headerRight: onRightPress
       ? () => (
-          <TouchableOpacity style={styles.backButton} onPress={onRightPress}>
-            <Icon
-              name={IconName.MoreVertical}
-              size={IconSize.Lg}
-              style={innerStyles.headerBackIcon}
-            />
-          </TouchableOpacity>
-        )
+        <TouchableOpacity style={styles.backButton} onPress={onRightPress}>
+          <Icon
+            name={IconName.MoreVertical}
+            size={IconSize.Lg}
+            style={innerStyles.headerBackIcon}
+          />
+        </TouchableOpacity>
+      )
       : () => <View />,
     headerStyle: [
       innerStyles.headerStyle,
@@ -1271,15 +1312,15 @@ export function getNetworkNavbarOptions(
     ),
     headerRight: onRightPress
       ? () => (
-          <TouchableOpacity style={styles.backButton} onPress={onRightPress}>
-            <MaterialCommunityIcon
-              name={'dots-horizontal'}
-              size={28}
-              style={innerStyles.headerIcon}
-            />
-          </TouchableOpacity>
-          // eslint-disable-next-line no-mixed-spaces-and-tabs
-        )
+        <TouchableOpacity style={styles.backButton} onPress={onRightPress}>
+          <MaterialCommunityIcon
+            name={'dots-horizontal'}
+            size={28}
+            style={innerStyles.headerIcon}
+          />
+        </TouchableOpacity>
+        // eslint-disable-next-line no-mixed-spaces-and-tabs
+      )
       : () => <View />,
     headerStyle: [
       innerStyles.headerStyle,
@@ -1783,3 +1824,36 @@ export const getSettingsNavigationOptions = (title, themeColors) => {
     ...innerStyles,
   };
 };
+
+export function getStakeInputNavbar(navigation, themeColors) {
+  const innerStyles = StyleSheet.create({
+    headerButtonText: {
+      color: themeColors.primary.default,
+      fontSize: 14,
+      ...fontStyles.normal,
+    },
+    headerStyle: {
+      backgroundColor: themeColors.background.default,
+      shadowColor: importedColors.transparent,
+      elevation: 0,
+    },
+  });
+  const title = strings('stake.stake_eth');
+  return {
+    headerTitle: () => (
+      <NavbarTitle title={title} disableNetwork translate={false} />
+    ),
+    headerLeft: () => <View />,
+    headerRight: () => (
+      <TouchableOpacity
+        onPress={() => navigation.dangerouslyGetParent()?.pop()}
+        style={styles.closeButton}
+      >
+        <Text style={innerStyles.headerButtonText}>
+          {strings('navigation.cancel')}
+        </Text>
+      </TouchableOpacity>
+    ),
+    headerStyle: innerStyles.headerStyle,
+  };
+}

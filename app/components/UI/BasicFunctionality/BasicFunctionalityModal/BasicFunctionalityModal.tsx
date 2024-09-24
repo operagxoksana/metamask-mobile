@@ -1,5 +1,5 @@
 // Third party dependencies.
-import React, { useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { View } from 'react-native';
 
 // External dependencies.
@@ -25,8 +25,30 @@ import Icon, {
   IconName,
   IconSize,
 } from '../../../../component-library/components/Icons/Icon';
+import Routes from '../../../../constants/navigation/Routes';
+import {
+  asyncAlert,
+  requestPushNotificationsPermission,
+} from '../../../../util/notifications';
+import { MetaMetricsEvents } from '../../../../core/Analytics';
+import { useEnableNotifications } from '../../../../util/notifications/hooks/useNotifications';
+import { useMetrics } from '../../../hooks/useMetrics';
+import {
+  selectIsProfileSyncingEnabled,
+  selectIsMetamaskNotificationsEnabled,
+} from '../../../../selectors/notifications';
+import { AuthorizationStatus } from '@notifee/react-native';
 
-const BasicFunctionalityModal = () => {
+interface Props {
+  route: {
+    params: {
+      caller: string;
+    };
+  };
+}
+
+const BasicFunctionalityModal = ({ route }: Props) => {
+  const { trackEvent } = useMetrics();
   const { colors } = useTheme();
   const styles = createStyles(colors);
   const bottomSheetRef = useRef<BottomSheetRef>(null);
@@ -35,11 +57,52 @@ const BasicFunctionalityModal = () => {
   const isEnabled = useSelector(
     (state: RootState) => state?.settings?.basicFunctionalityEnabled,
   );
+  const isProfileSyncingEnabled = useSelector(selectIsProfileSyncingEnabled);
+  const isNotificationsFeatureEnabled = useSelector(
+    selectIsMetamaskNotificationsEnabled,
+  );
 
-  const closeBottomSheet = () => {
-    bottomSheetRef.current?.onCloseBottomSheet(() =>
-      dispatch(toggleBasicFunctionality(!isEnabled)),
+  const { enableNotifications } = useEnableNotifications();
+
+  const enableNotificationsFromModal = useCallback(async () => {
+    const nativeNotificationStatus = await requestPushNotificationsPermission(
+      asyncAlert,
     );
+
+    if (nativeNotificationStatus?.authorizationStatus === AuthorizationStatus.AUTHORIZED) {
+      /**
+       * Although this is an async function, we are dispatching an action (firing & forget)
+       * to emulate optimistic UI.
+       *
+       */
+      enableNotifications();
+    }
+  }, [enableNotifications]);
+
+  const closeBottomSheet = async () => {
+    bottomSheetRef.current?.onCloseBottomSheet(() => {
+      dispatch(toggleBasicFunctionality(!isEnabled));
+      trackEvent(
+        !isEnabled
+          ? MetaMetricsEvents.BASIC_FUNCTIONALITY_ENABLED
+          : MetaMetricsEvents.BASIC_FUNCTIONALITY_DISABLED,
+      );
+      trackEvent(MetaMetricsEvents.SETTINGS_UPDATED, {
+        settings_group: 'security_privacy',
+        settings_type: 'basic_functionality',
+        old_value: isEnabled,
+        new_value: !isEnabled,
+        was_notifications_on: isEnabled ? isNotificationsFeatureEnabled : false,
+        was_profile_syncing_on: isEnabled ? isProfileSyncingEnabled : false,
+      });
+    });
+
+    if (
+      route.params.caller === Routes.SETTINGS.NOTIFICATIONS ||
+      route.params.caller === Routes.NOTIFICATIONS.OPT_IN
+    ) {
+      await enableNotificationsFromModal();
+    }
   };
 
   const handleSwitchToggle = () => {

@@ -49,7 +49,10 @@ class EngineService {
     }
 
     const controllers = [
-      { name: 'AddressBookController' },
+      {
+        name: 'AddressBookController',
+        key: `${engine.context.AddressBookController.name}:stateChange`,
+      },
       { name: 'AssetsContractController' },
       { name: 'NftController' },
       {
@@ -78,6 +81,10 @@ class EngineService {
         key: `${engine.context.PreferencesController.name}:stateChange`,
       },
       {
+        name: 'SelectedNetworkController',
+        key: `${engine.context.SelectedNetworkController.name}:stateChange`,
+      },
+      {
         name: 'TokenBalancesController',
         key: `${engine.context.TokenBalancesController.name}:stateChange`,
       },
@@ -86,10 +93,13 @@ class EngineService {
         name: 'TransactionController',
         key: `${engine.context.TransactionController.name}:stateChange`,
       },
-      { name: 'SmartTransactionsController' },
       {
         name: 'SwapsController',
         key: `${engine.context.SwapsController.name}:stateChange`,
+      },
+      {
+        name: 'SmartTransactionsController',
+        key: `${engine.context.SmartTransactionsController.name}:stateChange`,
       },
       {
         name: 'TokenListController',
