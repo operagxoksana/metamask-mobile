@@ -1825,7 +1825,8 @@ class Engine {
     // @ts-expect-error TODO: Resolve mismatch between base-controller versions.
     AssetsContractController.configure({ provider });
 
-    SwapsController.setProvider(provider as any, {
+    // @ts-expect-error TODO: Resolve mismatch between base-controller versions.
+    SwapsController.setProvider(provider, {
       chainId: NetworkController.getNetworkClientById(
         NetworkController?.state.selectedNetworkClientId,
       ).configuration.chainId,
