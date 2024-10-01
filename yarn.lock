@@ -5149,29 +5149,6 @@
     fastest-levenshtein "^1.0.16"
     punycode "^2.1.1"
 
-"@metamask/phishing-controller@^9.0.0":
-  version "9.0.2"
-  resolved "https://registry.yarnpkg.com/@metamask/phishing-controller/-/phishing-controller-9.0.2.tgz#d140b6a8a05947c59b04bf161a0d9055e6b711b2"
-  integrity sha512-eZRbym8o7isHbu741GVztxD2rzKvNQvB+XbmAq6qJD6eMKSSYKC9r/nDaxzaVz9qO93XCE8WnvSUmJx4m8RtaA==
-  dependencies:
-    "@metamask/base-controller" "^5.0.2"
-    "@metamask/controller-utils" "^9.1.0"
-    "@types/punycode" "^2.1.0"
-    eth-phishing-detect "^1.2.0"
-    punycode "^2.1.1"
-"@metamask/polling-controller@^4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@metamask/polling-controller/-/polling-controller-4.0.0.tgz#20ab8195cbf388ecc9c03f64234557ae8a528d37"
-  integrity sha512-BPSj/a8+RzXevuKpxS6xp9E/sHQ57knYBciNmHMSqej3MTMIe5G3Iyv9I5jkCQA2WSWYUksB7exTtkpmKoNZYA==
-  dependencies:
-    "@metamask/base-controller" "^4.0.1"
-    "@metamask/controller-utils" "^8.0.1"
-    "@metamask/network-controller" "^17.1.0"
-    "@metamask/utils" "^8.2.0"
-    "@types/uuid" "^8.3.0"
-    fast-json-stable-stringify "^2.1.0"
-    uuid "^8.3.2"
-
 "@metamask/polling-controller@^6.0.2":
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/@metamask/polling-controller/-/polling-controller-6.0.2.tgz#dbe3c7d6610729db0749d37ce0eebf846894bd0e"
