@@ -403,8 +403,8 @@ export function blockTagParamIndex(payload) {
  */
 export const getNetworkNameFromProviderConfig = (providerConfig) => {
   let name = strings('network_information.unknown_network');
-  if (providerConfig.nickname) {
-    name = providerConfig.nickname;
+  if (providerConfig?.nickname) {
+    name = providerConfig?.nickname;
   } else {
     const networkType = providerConfig.type;
     name = NetworkList?.[networkType]?.name || NetworkList[RPC].name;
