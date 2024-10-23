@@ -1500,6 +1500,8 @@ export const BrowserTab = (props) => {
     [props.linkType],
   );
 
+  console.log('ACTIVE TAB$$$$$$$$$$$$$$$$$', props.activeTab, 'CURRENT ID#############', props.id)
+
   /**
    * Main render
    */

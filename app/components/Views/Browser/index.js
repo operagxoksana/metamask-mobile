@@ -336,10 +336,25 @@ export const Browser = (props) => {
     }
   };
 
-  const renderTabsView = () => {
-    const showTabs = route.params?.showTabs;
-    if (showTabs) {
-      return (
+  const tab = tabs.find((tab) => tab.id === activeTabId);
+  const isShowingTabs = route.params?.showTabs;
+
+  return (
+    <View
+      style={baseStyles.flexGrow}
+      {...generateTestId(Platform, BROWSER_SCREEN_ID)}
+    >
+      <BrowserTab
+        id={tab.id}
+        activeTab={activeTabId}
+        key={`tab_${tab.id}`}
+        initialUrl={tab.url || AppConstants.HOMEPAGE_URL}
+        linkType={tab.linkType}
+        updateTabInfo={updateTabInfo}
+        showTabs={showTabs}
+        newTab={newTab}
+      />
+      {isShowingTabs ? (
         <Tabs
           tabs={tabs}
           activeTab={activeTabId}
@@ -349,31 +364,7 @@ export const Browser = (props) => {
           closeTabsView={closeTabsView}
           closeAllTabs={closeAllTabs}
         />
-      );
-    }
-    return null;
-  };
-
-  const renderBrowserTabs = () =>
-    tabs.map((tab) => (
-      <BrowserTab
-        id={tab.id}
-        key={`tab_${tab.id}`}
-        initialUrl={tab.url || AppConstants.HOMEPAGE_URL}
-        linkType={tab.linkType}
-        updateTabInfo={updateTabInfo}
-        showTabs={showTabs}
-        newTab={newTab}
-      />
-    ));
-
-  return (
-    <View
-      style={baseStyles.flexGrow}
-      {...generateTestId(Platform, BROWSER_SCREEN_ID)}
-    >
-      {renderBrowserTabs()}
-      {renderTabsView()}
+      ) : null}
     </View>
   );
 };
