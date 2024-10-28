@@ -8,47 +8,25 @@ import {
 import {
   toWei,
   weiToFiatNumber,
+  renderFromTokenMinimalUnit,
   fiatNumberToWei,
+  fromTokenMinimalUnitString,
   limitToMaximumDecimalPlaces,
   renderFiat,
-  renderFromWei,
 } from '../../../../util/number';
 import { strings } from '../../../../../locales/i18n';
 import useVaultData from './useVaultData';
-import useStakingGasFee from './useStakingGasFee';
-import { useFocusEffect } from '@react-navigation/native';
 
-const useStakingInputHandlers = (balance: BN) => {
+const useUnstakingInputHandlers = (balance: BN) => {
   const [amountEth, setAmountEth] = useState('0');
   const [amountWei, setAmountWei] = useState<BN>(new BN(0));
   const [estimatedAnnualRewards, setEstimatedAnnualRewards] = useState('-');
 
-  const {
-    estimatedGasFeeWei,
-    isLoadingStakingGasFee,
-    isStakingGasFeeError,
-    refreshGasValues,
-  } = useStakingGasFee(balance.toString());
-
-  useFocusEffect(
-    useCallback(() => {
-      refreshGasValues();
-    }, [refreshGasValues]),
-  );
-
-  const maxStakeableAmountWei = useMemo(
-    () =>
-      !isStakingGasFeeError && balance.gt(estimatedGasFeeWei)
-        ? balance.sub(estimatedGasFeeWei)
-        : new BN(0),
-    [balance, estimatedGasFeeWei, isStakingGasFeeError],
-  );
-
   const isNonZeroAmount = useMemo(() => amountWei.gt(new BN(0)), [amountWei]);
   const isOverMaximum = useMemo(() => {
-    const additionalFundsRequired = amountWei.sub(maxStakeableAmountWei);
+    const additionalFundsRequired = amountWei.sub(balance);
     return isNonZeroAmount && additionalFundsRequired.gt(new BN(0));
-  }, [amountWei, isNonZeroAmount, maxStakeableAmountWei]);
+  }, [amountWei, balance, isNonZeroAmount]);
 
   const [fiatAmount, setFiatAmount] = useState('0');
   const [isEth, setIsEth] = useState<boolean>(true);
@@ -79,8 +57,9 @@ const useStakingInputHandlers = (balance: BN) => {
   const handleFiatInput = useCallback(
     (value: string) => {
       setFiatAmount(value);
-      const ethValue = renderFromWei(
+      const ethValue = renderFromTokenMinimalUnit(
         fiatNumberToWei(value, conversionRate).toString(),
+        18,
         5,
       );
 
@@ -116,7 +95,14 @@ const useStakingInputHandlers = (balance: BN) => {
 
       const amountPercentage = balance.mul(new BN(percentage)).div(new BN(100));
 
-      const newEthAmount = renderFromWei(amountPercentage, 5);
+      const newAmountString = fromTokenMinimalUnitString(
+        amountPercentage.toString(10),
+        18,
+      );
+      const newEthAmount = limitToMaximumDecimalPlaces(
+        Number(newAmountString),
+        5,
+      );
       setAmountEth(newEthAmount);
       setAmountWei(amountPercentage);
 
@@ -129,22 +115,6 @@ const useStakingInputHandlers = (balance: BN) => {
     },
     [balance, conversionRate],
   );
-
-  const handleMax = useCallback(() => {
-    if (!balance) return;
-
-    const newEthAmount = renderFromWei(maxStakeableAmountWei, 5);
-
-    setAmountEth(newEthAmount);
-    setAmountWei(maxStakeableAmountWei);
-
-    const newFiatAmount = weiToFiatNumber(
-      maxStakeableAmountWei,
-      conversionRate,
-      2,
-    ).toString();
-    setFiatAmount(newFiatAmount);
-  }, [balance, conversionRate, maxStakeableAmountWei]);
 
   const annualRewardsETH = useMemo(
     () =>
@@ -205,9 +175,7 @@ const useStakingInputHandlers = (balance: BN) => {
     annualRewardsFiat,
     annualRewardRate,
     isLoadingVaultData,
-    handleMax,
-    isLoadingStakingGasFee,
   };
 };
 
-export default useStakingInputHandlers;
+export default useUnstakingInputHandlers;

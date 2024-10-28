@@ -150,6 +150,7 @@ const Routes = {
     CLAIM: 'Claim',
     MODALS: {
       LEARN_MORE: 'LearnMore',
+      MAX_INPUT: 'MaxInput',
     },
   },
   ///: BEGIN:ONLY_INCLUDE_IF(external-snaps)
