@@ -339,8 +339,6 @@ const Browser = (props) => {
   const tab = tabs.find((tab) => tab.id === activeTabId);
   const isShowingTabs = route.params?.showTabs;
 
-  console.log(tabs);
-
   return (
     <View
       style={baseStyles.flexGrow}
