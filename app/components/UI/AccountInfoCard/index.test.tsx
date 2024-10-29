@@ -1,11 +1,16 @@
 import React from 'react';
 import AccountInfoCard from './';
-import renderWithProvider from '../../../util/test/renderWithProvider';
+import renderWithProvider, {
+  DeepPartial,
+} from '../../../util/test/renderWithProvider';
 import { backgroundState } from '../../../util/test/initial-root-state';
 import {
   MOCK_ACCOUNTS_CONTROLLER_STATE,
   MOCK_ADDRESS_1,
 } from '../../../util/test/accountsControllerTestUtils';
+import { RootState } from '../../../reducers';
+import { RpcEndpointType } from '@metamask/network-controller';
+import { mockNetworkState } from '../../../util/test/network';
 
 jest.mock('../../../core/Engine', () => ({
   resetState: jest.fn(),
@@ -21,7 +26,7 @@ jest.mock('../../../core/Engine', () => ({
   },
 }));
 
-const mockInitialState = {
+const mockInitialState: DeepPartial<RootState> = {
   settings: {
     useBlockieIcon: false,
   },
@@ -45,12 +50,13 @@ const mockInitialState = {
         },
       },
       NetworkController: {
-        providerConfig: {
+        ...mockNetworkState({
           chainId: '0xaa36a7',
-          type: 'sepolia',
+          id: 'mainnet',
           nickname: 'Sepolia',
-          ticker: 'ETH',
-        },
+          ticker: 'SepoliaETH',
+          type: RpcEndpointType.Infura,
+        }),
       },
       TokenBalancesController: {
         contractBalances: {},

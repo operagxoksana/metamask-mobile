@@ -1,5 +1,5 @@
 'use strict';
-import { SmokeCore } from '../../tags';
+import { Regression } from '../../tags';
 import TabBarComponent from '../../pages/TabBarComponent';
 import { loginToApp } from '../../viewHelper';
 import {
@@ -15,9 +15,9 @@ import FixtureServer from '../../fixtures/fixture-server';
 import BrowserView from '../../pages/Browser/BrowserView';
 import PortfolioHomePage from '../../pages/Browser/PortfolioHomePage';
 import Assertions from '../../utils/Assertions';
-import ConnectModal from '../../pages/modals/ConnectModal';
+import ConnectBottomSheet from '../../pages/Browser/ConnectBottomSheet';
 const fixtureServer = new FixtureServer();
-describe(SmokeCore('Connect account to Portfolio'), () => {
+describe(Regression('Connect account to Portfolio'), () => {
   beforeAll(async () => {
     await TestHelpers.reverseServerPort();
     const fixture = new FixtureBuilder().withKeyringController().build();
@@ -50,9 +50,9 @@ describe(SmokeCore('Connect account to Portfolio'), () => {
       /* eslint-disable no-console */
       console.log('The Portfolio privacy modal is not visible');
     }
-    await PortfolioHomePage.tapConnectMetaMask();
     await device.disableSynchronization();
-    await ConnectModal.tapConnectButton();
+    await PortfolioHomePage.tapConnectMetaMask();
+    await ConnectBottomSheet.tapConnectButton();
     await device.enableSynchronization();
   });
 

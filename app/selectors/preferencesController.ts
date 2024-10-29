@@ -17,6 +17,12 @@ export const selectUseNftDetection = createSelector(
     preferencesControllerState.useNftDetection,
 );
 
+export const selectShowMultiRpcModal = createSelector(
+  selectPreferencesControllerState,
+  (preferencesControllerState: PreferencesState) =>
+    preferencesControllerState.showMultiRpcModal,
+);
+
 export const selectUseTokenDetection = createSelector(
   selectPreferencesControllerState,
   (preferencesControllerState: PreferencesState) =>
@@ -35,10 +41,10 @@ export const selectUseSafeChainsListValidation = createSelector(
     preferencesControllerState.useSafeChainsListValidation,
 );
 
-export const selectDisabledRpcMethodPreferences = createSelector(
+export const selectTokenSortConfig = createSelector(
   selectPreferencesControllerState,
   (preferencesControllerState: PreferencesState) =>
-    preferencesControllerState.disabledRpcMethodPreferences,
+    preferencesControllerState.tokenSortConfig,
 );
 
 // isMultiAccountBalancesEnabled is a patched property - ref patches/@metamask+preferences-controller+2.1.0.patch

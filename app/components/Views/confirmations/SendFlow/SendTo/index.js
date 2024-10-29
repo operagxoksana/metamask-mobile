@@ -62,6 +62,7 @@ import { includes } from 'lodash';
 import { SendViewSelectorsIDs } from '../../../../../../e2e/selectors/SendView.selectors';
 import { withMetricsAwareness } from '../../../../../components/hooks/useMetrics';
 import { toLowerCaseEquals } from '../../../../../util/general';
+import { selectAddressBook } from '../../../../../selectors/addressBookController';
 
 const dummy = () => true;
 
@@ -329,10 +330,13 @@ class SendFlow extends PureComponent {
 
     return (
       <>
-        <Text bold style={styles.buyEth} onPress={this.goToBuy}>
-          {strings('fiat_on_ramp.buy', {
-            ticker: getTicker(this.props.ticker),
-          })}
+        <Text> </Text>
+        <Text reset bold link underline onPress={this.goToBuy}>
+          {strings('fiat_on_ramp_aggregator.token_marketplace')}.
+        </Text>
+        <Text reset>
+          {'\n'}
+          {strings('transaction.you_can_also_send_funds')}
         </Text>
       </>
     );
@@ -668,7 +672,7 @@ class SendFlow extends PureComponent {
 SendFlow.contextType = ThemeContext;
 
 const mapStateToProps = (state) => ({
-  addressBook: state.engine.backgroundState.AddressBookController.addressBook,
+  addressBook: selectAddressBook(state),
   chainId: selectChainId(state),
   selectedAddress: selectSelectedInternalAccountChecksummedAddress(state),
   selectedAsset: state.transaction.selectedAsset,

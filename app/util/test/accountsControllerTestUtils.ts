@@ -1,6 +1,7 @@
 import { v4 as uuidV4 } from 'uuid';
 import { EthMethod, InternalAccount } from '@metamask/keyring-api';
 import { AccountsControllerState } from '@metamask/accounts-controller';
+import { KeyringTypes } from '@metamask/keyring-controller';
 
 export function createMockUuidFromAddress(address: string): string {
   const fakeShaFromAddress = Array.from(
@@ -29,7 +30,37 @@ export function createMockInternalAccount(
     options: {},
     methods: [
       EthMethod.PersonalSign,
-      EthMethod.Sign,
+      EthMethod.SignTransaction,
+      EthMethod.SignTypedDataV1,
+      EthMethod.SignTypedDataV3,
+      EthMethod.SignTypedDataV4,
+    ],
+    type: 'eip155:eoa',
+  };
+}
+
+export function createMockSnapInternalAccount(
+  address: string,
+  nickname: string,
+): InternalAccount {
+  return {
+    address,
+    id: createMockUuidFromAddress(address),
+    metadata: {
+      name: nickname,
+      importTime: 1684232000456,
+      keyring: {
+        type: 'Snap Keyring',
+      },
+      snap: {
+        id: 'npm:@metamask/snap-simple-keyring-snap',
+        name: 'MetaMask Simple Snap Keyring',
+        enabled: true,
+      },
+    },
+    options: {},
+    methods: [
+      EthMethod.PersonalSign,
       EthMethod.SignTransaction,
       EthMethod.SignTypedDataV1,
       EthMethod.SignTypedDataV3,
@@ -99,4 +130,31 @@ export function createMockAccountsControllerState(
       selectedAccount,
     },
   };
+}
+
+export function createMockAccountsControllerStateWithSnap(
+  addresses: string[],
+  snapAccountIndex: number = 0,
+): AccountsControllerState {
+  if (addresses.length === 0) {
+    throw new Error('At least one address is required');
+  }
+
+  if (snapAccountIndex < 0 || snapAccountIndex >= addresses.length) {
+    throw new Error('Invalid snapAccountIndex');
+  }
+
+  const state = createMockAccountsControllerState(
+    addresses,
+    addresses[snapAccountIndex],
+  );
+
+  const snapAccountUuid = createMockUuidFromAddress(
+    addresses[snapAccountIndex].toLowerCase(),
+  );
+  state.internalAccounts.accounts[snapAccountUuid].metadata.keyring = {
+    type: KeyringTypes.snap,
+  };
+
+  return state;
 }

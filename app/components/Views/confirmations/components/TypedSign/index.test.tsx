@@ -14,7 +14,7 @@ import renderWithProvider from '../../../../../util/test/renderWithProvider';
 import { fireEvent, waitFor } from '@testing-library/react-native';
 import { MetaMetrics } from '../../../../../core/Analytics';
 import { MOCK_ACCOUNTS_CONTROLLER_STATE } from '../../../../../util/test/accountsControllerTestUtils';
-import { SigningModalSelectorsIDs } from '../../../../../../e2e/selectors/Modals/SigningModal.selectors';
+import { SigningBottomSheetSelectorsIDs } from '../../../../../../e2e/selectors/Browser/SigningBottomSheet.selectors';
 
 jest.mock('../../../../../core/Analytics/MetaMetrics');
 
@@ -136,7 +136,7 @@ describe('TypedSign', () => {
       expect(container).toMatchSnapshot();
 
       const signButton = await container.findByTestId(
-        SigningModalSelectorsIDs.SIGN_BUTTON,
+        SigningBottomSheetSelectorsIDs.SIGN_BUTTON,
       );
       fireEvent.press(signButton);
       expect(mockConfirm).toHaveBeenCalledTimes(1);
@@ -172,7 +172,7 @@ describe('TypedSign', () => {
         );
 
         const signButton = await container.findByTestId(
-          SigningModalSelectorsIDs.SIGN_BUTTON,
+          SigningBottomSheetSelectorsIDs.SIGN_BUTTON,
         );
         fireEvent.press(signButton);
 
@@ -231,7 +231,7 @@ describe('TypedSign', () => {
         );
 
         const rejectButton = await container.findByTestId(
-          SigningModalSelectorsIDs.CANCEL_BUTTON,
+          SigningBottomSheetSelectorsIDs.CANCEL_BUTTON,
         );
         fireEvent.press(rejectButton);
 
@@ -272,7 +272,7 @@ describe('TypedSign', () => {
       expect(container).toMatchSnapshot();
 
       const rejectButton = await container.findByTestId(
-        SigningModalSelectorsIDs.CANCEL_BUTTON,
+        SigningBottomSheetSelectorsIDs.CANCEL_BUTTON,
       );
       fireEvent.press(rejectButton);
       expect(mockReject).toHaveBeenCalledTimes(1);
@@ -315,7 +315,7 @@ describe('TypedSign', () => {
       );
 
       const rejectButton = await container.findByTestId(
-        SigningModalSelectorsIDs.CANCEL_BUTTON,
+        SigningBottomSheetSelectorsIDs.CANCEL_BUTTON,
       );
       fireEvent.press(rejectButton);
 
@@ -353,7 +353,7 @@ describe('TypedSign', () => {
       );
 
       const rejectButton = await container.findByTestId(
-        SigningModalSelectorsIDs.CANCEL_BUTTON,
+        SigningBottomSheetSelectorsIDs.CANCEL_BUTTON,
       );
       fireEvent.press(rejectButton);
 
@@ -370,11 +370,12 @@ describe('TypedSign', () => {
       expect(lastMockCall[0]).toEqual({ category: 'Signature Rejected' });
       expect(lastMockCall[1]).toEqual({
         account_type: 'Metamask',
-        dapp_host_name: undefined,
-        chain_id: undefined,
+        dapp_host_name: 'N/A',
+        chain_id: '1',
         signature_type: undefined,
-        version: undefined,
+        version: 'N/A',
         security_alert_response: 'Benign',
+        security_alert_source: undefined,
         security_alert_reason: '',
         ppom_eth_chainId_count: 1,
       });
@@ -395,7 +396,7 @@ describe('TypedSign', () => {
       );
 
       const signButton = await container.findByTestId(
-        SigningModalSelectorsIDs.SIGN_BUTTON,
+        SigningBottomSheetSelectorsIDs.SIGN_BUTTON,
       );
       fireEvent.press(signButton);
 
@@ -410,11 +411,12 @@ describe('TypedSign', () => {
       expect(lastMockCall[0]).toEqual({ category: 'Signature Approved' });
       expect(lastMockCall[1]).toEqual({
         account_type: 'Metamask',
-        dapp_host_name: undefined,
-        chain_id: undefined,
-        version: undefined,
+        dapp_host_name: 'N/A',
+        chain_id: '1',
+        version: 'N/A',
         signature_type: undefined,
         security_alert_response: 'Benign',
+        security_alert_source: undefined,
         security_alert_reason: '',
         ppom_eth_chainId_count: 1,
       });

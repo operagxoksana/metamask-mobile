@@ -9,9 +9,13 @@ import { Authentication } from '../core';
 import LockManagerService from '../core/LockManagerService';
 import ReadOnlyNetworkStore from '../util/test/network-store';
 import { isE2E } from '../util/test/utils';
+import { trace, endTrace, TraceName, TraceOperation } from '../util/trace';
+
 import thunk from 'redux-thunk';
 
 import persistConfig from './persistConfig';
+import { AppStateEventProcessor } from '../core/AppStateEventListener';
+import { getTraceTags } from '../util/sentry/tags';
 
 // TODO: Improve type safety by using real Action types instead of `any`
 // TODO: Replace "any" with type
@@ -34,18 +38,43 @@ const createStoreAndPersistor = async () => {
   // Create the store and apply middlewares. In E2E tests, an optional initialState
   // from fixtures can be provided to preload the store; otherwise, it remains undefined.
 
+  const middlewares = [sagaMiddleware, thunk];
+
+  if (__DEV__) {
+    // Add redux flipper middleware for debugging Redux with Flipper
+    // Flipper's client side plugin is https://github.com/jk-gan/flipper-plugin-redux-debugger, which needs to be added as a plugin
+    // flipper-plugin-redux-debugger is named redux-debugger in Flipper's plugin list
+    /* eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires */
+    const createReduxFlipperDebugger = require('redux-flipper').default;
+    middlewares.push(createReduxFlipperDebugger());
+  }
+
+  trace({
+    name: TraceName.CreateStore,
+    op: TraceOperation.CreateStore,
+  });
+
   store = configureStore({
     reducer: pReducer,
-    middleware: [sagaMiddleware, thunk],
+    middleware: middlewares,
     preloadedState: initialState,
   });
 
   sagaMiddleware.run(rootSaga);
 
+  endTrace({ name: TraceName.CreateStore });
+
+  trace({
+    name: TraceName.StorageRehydration,
+    op: TraceOperation.StorageRehydration,
+  });
+
   /**
    * Initialize services after persist is completed
    */
   const onPersistComplete = () => {
+    endTrace({ name: TraceName.StorageRehydration });
+
     /**
      * EngineService.initalizeEngine(store) with SES/lockdown:
      * Requires ethjs nested patches (lib->src)
@@ -61,13 +90,30 @@ const createStoreAndPersistor = async () => {
      * - TypeError: undefined is not an object (evaluating 'TokenListController.tokenList')
      * - V8: SES_UNHANDLED_REJECTION
      */
+
     store.dispatch({
       type: 'TOGGLE_BASIC_FUNCTIONALITY',
       basicFunctionalityEnabled:
         store.getState().settings.basicFunctionalityEnabled,
     });
-    EngineService.initalizeEngine(store);
+    // Fetch feature flags only if basic functionality is enabled
+    store.getState().settings.basicFunctionalityEnabled &&
+      store.dispatch({
+        type: 'FETCH_FEATURE_FLAGS',
+      });
+    trace(
+      {
+        name: TraceName.EngineInitialization,
+        op: TraceOperation.EngineInitialization,
+        tags: getTraceTags(store.getState()),
+      },
+      () => {
+        EngineService.initalizeEngine(store);
+      },
+    );
+
     Authentication.init(store);
+    AppStateEventProcessor.init(store);
     LockManagerService.init(store);
   };
 
@@ -75,7 +121,13 @@ const createStoreAndPersistor = async () => {
 };
 
 (async () => {
-  await createStoreAndPersistor();
+  await trace(
+    {
+      name: TraceName.UIStartup,
+      op: TraceOperation.UIStartup,
+    },
+    async () => await createStoreAndPersistor(),
+  );
 })();
 
 export { store, persistor };
