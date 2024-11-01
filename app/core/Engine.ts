@@ -542,6 +542,7 @@ export class Engine {
         useNftDetection: true, // set this to true to enable nft detection by default to new users
         displayNftMedia: true,
         securityAlertsEnabled: true,
+        smartTransactionsOptInStatus: true,
         tokenSortConfig: {
           key: 'tokenFiatAmount',
           order: 'dsc',
