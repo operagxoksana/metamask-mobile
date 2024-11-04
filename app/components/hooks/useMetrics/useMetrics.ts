@@ -76,19 +76,31 @@ import { MetaMetrics } from '../../../core/Analytics';
  *   getMetaMetricsId,
  * } = useMetrics();
  */
-const useMetrics = (): IUseMetricsHook => ({
-  trackEvent: MetaMetrics.getInstance().trackEvent,
-  enable: MetaMetrics.getInstance().enable,
-  addTraitsToUser: MetaMetrics.getInstance().addTraitsToUser,
-  createDataDeletionTask: MetaMetrics.getInstance().createDataDeletionTask,
-  checkDataDeleteStatus: MetaMetrics.getInstance().checkDataDeleteStatus,
-  getDeleteRegulationCreationDate:
-    MetaMetrics.getInstance().getDeleteRegulationCreationDate,
-  getDeleteRegulationId: MetaMetrics.getInstance().getDeleteRegulationId,
-  isDataRecorded: MetaMetrics.getInstance().isDataRecorded,
-  isEnabled: MetaMetrics.getInstance().isEnabled,
-  getMetaMetricsId: MetaMetrics.getInstance().getMetaMetricsId,
-  createEventBuilder: MetricsEventBuilder.createEventBuilder,
-});
+const useMetrics = (): IUseMetricsHook => {
+  const metaMetricsInstance = MetaMetrics.getInstance();
+
+  return {
+    trackEvent: metaMetricsInstance.trackEvent.bind(metaMetricsInstance),
+    enable: metaMetricsInstance.enable.bind(metaMetricsInstance),
+    addTraitsToUser:
+      metaMetricsInstance.addTraitsToUser.bind(metaMetricsInstance),
+    createDataDeletionTask:
+      metaMetricsInstance.createDataDeletionTask.bind(metaMetricsInstance),
+    checkDataDeleteStatus:
+      metaMetricsInstance.checkDataDeleteStatus.bind(metaMetricsInstance),
+    getDeleteRegulationCreationDate:
+      metaMetricsInstance.getDeleteRegulationCreationDate.bind(
+        metaMetricsInstance,
+      ),
+    getDeleteRegulationId:
+      metaMetricsInstance.getDeleteRegulationId.bind(metaMetricsInstance),
+    isDataRecorded:
+      metaMetricsInstance.isDataRecorded.bind(metaMetricsInstance),
+    isEnabled: metaMetricsInstance.isEnabled.bind(metaMetricsInstance),
+    getMetaMetricsId:
+      metaMetricsInstance.getMetaMetricsId.bind(metaMetricsInstance),
+    createEventBuilder: MetricsEventBuilder.createEventBuilder,
+  };
+};
 
 export default useMetrics;
