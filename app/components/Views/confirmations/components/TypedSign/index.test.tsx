@@ -20,6 +20,15 @@ jest.mock('../../../../../core/Analytics/MetaMetrics');
 
 const mockMetrics = {
   trackEvent: jest.fn(),
+  enable: jest.fn(() => Promise.resolve()),
+  addTraitsToUser: jest.fn(() => Promise.resolve()),
+  isEnabled: jest.fn(() => false),
+  createDataDeletionTask: jest.fn(() => Promise.resolve()),
+  checkDataDeleteStatus: jest.fn(() => Promise.resolve()),
+  getDeleteRegulationCreationDate: jest.fn(),
+  getDeleteRegulationId: jest.fn(),
+  isDataRecorded: jest.fn(),
+  getMetaMetricsId: jest.fn(() => Promise.resolve()),
 };
 
 (MetaMetrics.getInstance as jest.Mock).mockReturnValue(mockMetrics);

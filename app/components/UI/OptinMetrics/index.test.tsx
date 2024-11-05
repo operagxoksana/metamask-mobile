@@ -1,8 +1,19 @@
 import OptinMetrics from './';
 import { renderScreen } from '../../../util/test/renderWithProvider';
-import { MetaMetrics, MetaMetricsEvents } from '../../../core/Analytics';
+import {
+  DataDeleteResponseStatus,
+  DataDeleteStatus,
+  IMetaMetricsEvent,
+  MetaMetrics,
+  MetaMetricsEvents,
+} from '../../../core/Analytics';
 import { fireEvent, screen, waitFor } from '@testing-library/react-native';
 import { strings } from '../../../../locales/i18n';
+import {
+  CombinedProperties,
+  ISegmentClient,
+  ITrackingEvent,
+} from '../../../core/Analytics/MetaMetrics.types';
 
 const { InteractionManager } = jest.requireActual('react-native');
 
@@ -12,14 +23,87 @@ InteractionManager.runAfterInteractions = jest.fn(async (callback) =>
 
 jest.mock('../../../core/Analytics/MetaMetrics');
 
-const mockMetrics = {
-  trackEvent: jest.fn().mockImplementation(() => Promise.resolve()),
-  enable: jest.fn(() => Promise.resolve()),
-  addTraitsToUser: jest.fn(() => Promise.resolve()),
-  isEnabled: jest.fn(() => true),
-};
+interface GlobalWithSegmentClient {
+  segmentMockClient: ISegmentClient;
+}
 
-(MetaMetrics.getInstance as jest.Mock).mockReturnValue(mockMetrics);
+// Mock class that extends MetaMetrics to simulate trackEvent with overloads
+class MockMetaMetrics extends MetaMetrics {
+  static getInstance() {
+    const { segmentMockClient } = global as unknown as GlobalWithSegmentClient;
+    return new MockMetaMetrics(segmentMockClient);
+  }
+
+  // Overloaded signatures
+  trackEvent(
+    event: IMetaMetricsEvent,
+    properties?: CombinedProperties,
+    saveDataRecording?: boolean,
+  ): void;
+  trackEvent(event: ITrackingEvent, saveDataRecording?: boolean): void;
+
+  // Mocked implementation handling both overloads
+  trackEvent(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    event: IMetaMetricsEvent | ITrackingEvent,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    propertiesOrSaveData?: CombinedProperties | boolean,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    saveData?: boolean,
+  ): void {
+    return;
+  }
+
+  // Mock other methods as needed
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async enable(enabled: boolean): Promise<void> {
+    return Promise.resolve();
+  }
+
+  addTraitsToUser() {
+    return Promise.resolve();
+  }
+
+  createDataDeletionTask() {
+    return Promise.resolve({
+      status: DataDeleteResponseStatus.ok,
+    });
+  }
+
+  checkDataDeleteStatus() {
+    return Promise.resolve({
+      deletionRequestDate: undefined,
+      dataDeletionRequestStatus: DataDeleteStatus.unknown,
+      hasCollectedDataSinceDeletionRequest: false,
+    });
+  }
+
+  getDeleteRegulationCreationDate() {
+    return '20/04/2024';
+  }
+
+  getDeleteRegulationId() {
+    return 'TWV0YU1hc2t1c2Vzbm9wb2ludCE';
+  }
+
+  getMetaMetricsId() {
+    return Promise.resolve('4d657461-4d61-436b-8e73-46756e212121');
+  }
+
+  isDataRecorded() {
+    return true;
+  }
+
+  isEnabled() {
+    return true;
+  }
+}
+
+(MetaMetrics.getInstance as jest.Mock).mockReturnValue(
+  MockMetaMetrics.getInstance(),
+);
+
+const mockMetrics = MetaMetrics.getInstance() as MockMetaMetrics;
 
 jest.mock(
   '../../../util/metrics/UserSettingsAnalyticsMetaData/generateUserProfileAnalyticsMetaData',

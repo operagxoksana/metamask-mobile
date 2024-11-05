@@ -16,11 +16,6 @@ import {
 
 jest.mock('../../../core/Analytics/MetaMetrics');
 
-// allows runAfterInteractions to return immediately
-jest.mock('react-native/Libraries/Interaction/InteractionManager', () => ({
-  runAfterInteractions: (callback: () => Promise<void>) => callback(),
-}));
-
 const expectedDataDeletionTaskResponse: IDeleteRegulationResponse = {
   status: DataDeleteResponseStatus.ok,
 };
@@ -45,7 +40,9 @@ const { segmentMockClient } = global as unknown as GlobalWithSegmentClient;
 class MockMetaMetrics extends MetaMetrics {
   mockEnabled = true;
 
-  static getInstance = jest.fn(() => new MockMetaMetrics(segmentMockClient));
+  static getInstance() {
+    return new MockMetaMetrics(segmentMockClient);
+  }
 
   // Overloaded signatures
   trackEvent(
@@ -70,21 +67,42 @@ class MockMetaMetrics extends MetaMetrics {
   }
 
   // Mock other methods as needed
-  enable = jest.fn((enabled) => Promise.resolve((this.mockEnabled = enabled)));
-  addTraitsToUser = jest.fn(() => Promise.resolve());
-  createDataDeletionTask = jest.fn(() =>
-    Promise.resolve(expectedDataDeletionTaskResponse),
-  );
-  checkDataDeleteStatus = jest.fn(() =>
-    Promise.resolve(expectedDataDeleteStatus),
-  );
-  getDeleteRegulationCreationDate = jest.fn(() => expectedDate);
-  getDeleteRegulationId = jest.fn(() => expectedDataDeleteRegulationId);
-  getMetaMetricsId = jest.fn(() =>
-    Promise.resolve('4d657461-4d61-436b-8e73-46756e212121'),
-  );
-  isDataRecorded = jest.fn(() => true);
-  isEnabled = jest.fn(() => this.mockEnabled);
+  async enable(enabled: boolean): Promise<void> {
+    this.mockEnabled = enabled;
+    return Promise.resolve();
+  }
+
+  addTraitsToUser() {
+    return Promise.resolve();
+  }
+
+  createDataDeletionTask() {
+    return Promise.resolve(expectedDataDeletionTaskResponse);
+  }
+
+  checkDataDeleteStatus() {
+    return Promise.resolve(expectedDataDeleteStatus);
+  }
+
+  getDeleteRegulationCreationDate() {
+    return expectedDate;
+  }
+
+  getDeleteRegulationId() {
+    return expectedDataDeleteRegulationId;
+  }
+
+  getMetaMetricsId() {
+    return Promise.resolve('4d657461-4d61-436b-8e73-46756e212121');
+  }
+
+  isDataRecorded() {
+    return true;
+  }
+
+  isEnabled() {
+    return this.mockEnabled;
+  }
 }
 
 (MetaMetrics.getInstance as jest.Mock).mockReturnValue(
@@ -219,6 +237,6 @@ describe('useMetrics', () => {
     expect(mockMetrics.trackEvent).toHaveBeenCalledWith(legacyEvent);
     expect(mockMetrics.trackEvent).toHaveBeenCalledWith(event);
     expect(mockMetrics.trackEvent).toHaveBeenCalledWith(newEvent);
-    expect(mockMetrics.enable).toBeTruthy();
+    expect(mockMetrics.enable.bind(mockMetrics)).toBeTruthy();
   });
 });
