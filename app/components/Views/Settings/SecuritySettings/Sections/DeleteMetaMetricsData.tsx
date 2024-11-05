@@ -163,7 +163,7 @@ const DeleteMetaMetricsData = (props: DeleteMetaMetricsDataProps) => {
     // Then we check the initial status that may override this value
     setDataTrackedSinceLastDeletion(metricsOptin);
     checkInitialStatus();
-  }, [metricsOptin, checkInitialStatus, setDataTrackedSinceLastDeletion]);
+  });
 
   const openPrivacyPolicy = () => Linking.openURL(CONSENSYS_PRIVACY_POLICY);
   const openMetametricsHowto = () => Linking.openURL(HOWTO_MANAGE_METAMETRICS);
